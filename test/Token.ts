@@ -12,18 +12,38 @@ describe("Token tests", () => {
     return { token, owner, account1 };
   }
 
-  it("mint tokens tests", async () => {
+  it("should return correct decimals", async () => {
+    const { token } = await loadFixture(tokenFixture);
+    const decimals = await token.decimals();
+
+    expect(decimals).to.equal(2);
+  });
+
+  it("should mint tokens", async () => {
     const { token, owner, account1 } = await loadFixture(tokenFixture);
 
-    const tokens = "10000";
-    await token.mint(owner.address, tokens);
-    await token.mint(account1.address, tokens);
+    await expect(token.mint(owner.address, 100)).to.changeTokenBalances(
+      token,
+      [owner],
+      [100]
+    );
+
+    await expect(token.mint(account1.address, 50)).to.changeTokenBalances(
+      token,
+      [account1],
+      [50]
+    );
 
     const totalSupply = await token.totalSupply();
-    expect(totalSupply).to.equal(Number(tokens) * 2);
+    expect(totalSupply).to.equal(100 + 50);
+  });
 
-    const ownerBalance = await token.balanceOf(owner.address);
-    expect(ownerBalance).to.equal(tokens);
+  it("only the owner can mint the tokens", async () => {
+    const { token, owner, account1 } = await loadFixture(tokenFixture);
+
+    await expect(
+      token.connect(account1).mint(owner.address, 100)
+    ).to.revertedWith("Ownable: caller is not the owner");
   });
 
   it("the token can receive ETH", async () => {
