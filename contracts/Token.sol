@@ -30,12 +30,16 @@ contract Token is ERC20, Ownable {
     function transferETHtoAddress(address payable receiver, uint256 amount)
         public
         onlyOwner
+        checkAmount(amount)
     {
+        receiver.transfer(amount);
+    }
+
+    modifier checkAmount(uint256 amount) {
         require(
             receivedETH() >= amount,
             "The amount available is higher than ETH"
         );
-
-        receiver.transfer(amount);
+        _;
     }
 }
