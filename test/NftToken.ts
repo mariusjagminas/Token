@@ -18,4 +18,13 @@ describe("NftToken tests", () => {
     expect(await token.name()).to.equal("NftToken");
     expect(await token.symbol()).to.equal("Nft");
   });
+
+  it("anyone can add the token", async () => {
+    const { token, account1 } = await loadFixture(tokenFixture);
+
+    await token.addItem(account1.address, "https://test.json");
+
+    expect(await token.ownerOf(0)).to.equal(account1.address);
+    expect(await token.tokenURI(0)).to.equal("https://test.json");
+  });
 });
