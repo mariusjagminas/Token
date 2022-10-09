@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 // import "hardhat/console.sol";
 
-contract NftToken is ERC721URIStorage {
+contract NftToken is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -17,6 +17,7 @@ contract NftToken is ERC721URIStorage {
 
     function addItem(address tokenOwner, string memory tokenURI)
         public
+        onlyOwner
         returns (uint256)
     {
         uint256 newItemId = _tokenIds.current();
